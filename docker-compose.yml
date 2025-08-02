@@ -1,8 +1,9 @@
-version: '3'
+version: '3.8'  # Използвайте по-нова версия
 services:
   app:
-    image: kirito3/student_registry:${TAG:-latest} 
+    image: kirito3/student_registry:${TAG:-latest}
     ports:
-      - "3030:3030" # Map port 3030 on the host to port 3030 in the container
+      - "3030:3030"
     environment:
       - NODE_ENV=production
+    restart: unless-stopped  # Добавете автоматичен рестарт
