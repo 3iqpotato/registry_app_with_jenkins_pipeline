@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     tools {
-        nodejs 'NodeJS-LTS' // Трябва да съвпада с името от стъпка 2
+        nodejs 'node-24.5'  // Това трябва да е точното име от Global Tool Configuration
     }
 
     stages {
