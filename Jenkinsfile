@@ -1,23 +1,22 @@
 pipeline {
-  agent {
-    docker {
-      image 'node:18'
-      args '-u root'
-      reuseNode true
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/3iqpotato/registry_app_with_jenkins_pipeline'
+            }
+        }
+        stage('Build & Test') {
+            steps {
+                sh 'npm install'
+                sh 'npm run build'
+                sh 'npm test'  // ако има тестове
+            }
+        }
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()  // изчиства workspace-а след билда
+            }
+        }
     }
-  }
-  stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-        sh 'ls -la' // виждаш .git?
-      }
-    }
-    stage('Install & Test') {
-      steps {
-        sh 'npm install'
-        sh 'npm test'
-      }
-    }
-  }
 }
