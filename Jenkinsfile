@@ -1,48 +1,48 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:18'
-        }
-    }
-
-
-    environment {
-        NODE_ENV = 'test'
-    }
+    agent any
 
     stages {
-        stage('Checkout code') {
+        // 1. Checkout code
+        stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Install dependencies') {
+        // 2. Setup Node.js (ако не е инсталиран)
+        stage('Setup Node.js') {
+            steps {
+                sh '''
+                    if ! command -v node &> /dev/null; then
+                        echo "Installing Node.js..."
+                        curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+                        apt-get install -y nodejs
+                    fi
+                    node --version
+                '''
+            }
+        }
+
+        // 3. Install dependencies
+        stage('Install Dependencies') {
             steps {
                 sh 'npm install'
             }
         }
 
-        stage('Build (optional)') {
-            when {
-                expression { fileExists('build') || fileExists('webpack.config.js') }
-            }
-            steps {
-                sh 'npm run build'
-            }
-        }
-
-        stage('Start application (optional)') {
+        // 4. Start application (ако има server.js/index.js)
+        stage('Start App') {
             when {
                 expression { fileExists('server.js') || fileExists('index.js') }
             }
             steps {
                 sh 'npm start &'
-                sleep 5  // Изчакване за стартиране
+                sh 'sleep 5'
             }
         }
 
-        stage('Run tests') {
+        // 5. Run tests
+        stage('Run Tests') {
             steps {
                 sh 'npm test'
             }
@@ -51,13 +51,7 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline finished.'
-        }
-        success {
-            echo 'Tests passed!'
-        }
-        failure {
-            echo 'Tests failed.'
+            echo "Build completed - ${currentBuild.result ?: 'SUCCESS'}"
         }
     }
 }
