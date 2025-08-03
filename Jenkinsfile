@@ -4,11 +4,11 @@ pipeline {
     stages {
         stage('Setup Node.js') {
             steps {
-                sh '''
-                    # Временен fix с nvm (не изисква root)
+                sh '''#!/bin/bash
+                    # Инсталиране на nvm без root права
                     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
                     export NVM_DIR="$HOME/.nvm"
-                    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
                     nvm install 18
                     node --version
                 '''
