@@ -1,23 +1,21 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:18'
-            args '-p 3000:3000'
-        }
-    }
+    agent any  // Използва default Jenkins agent
+
     stages {
         stage('Checkout') {
             steps {
-                checkout scm  // Автоматично извлича кода
+                checkout scm
             }
         }
-        stage('Install') {
+        stage('Build in Docker') {
+            agent {
+                docker {
+                    image 'node:18'
+                    args '-p 3000:3000'
+                }
+            }
             steps {
                 sh 'npm install'
-            }
-        }
-        stage('Test') {
-            steps {
                 sh 'npm test'
             }
         }
