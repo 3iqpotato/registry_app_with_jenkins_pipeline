@@ -2,27 +2,25 @@ pipeline {
     agent any
 
     stages {
-        stage('Setup Node.js') {
+        stage('Setup Environment') {
             steps {
                 sh '''#!/bin/bash -l
-                    # Инсталиране на Node.js глобално
-                    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-                    sudo apt-get install -y nodejs
+                    # Изтегляне и инсталиране на Node.js в home директория
+                    mkdir -p ~/.nodejs
+                    curl -L https://nodejs.org/dist/v18.20.2/node-v18.20.2-linux-x64.tar.xz | tar -xJ -C ~/.nodejs --strip-components=1
+                    echo "export PATH=\$HOME/.nodejs/bin:\$PATH" >> ~/.bashrc
+                    source ~/.bashrc
                     
-                    # Проверка на версиите
-                    echo "Node.js version: $(node --version)"
-                    echo "npm version: $(npm --version)"
+                    node --version
+                    npm --version
                 '''
             }
         }
 
-        stage('Install & Test') {
+        stage('Run Pipeline') {
             steps {
                 sh '''#!/bin/bash -l
-                    # Изрично задаване на PATH (ако е необходимо)
-                    export PATH=$PATH:/usr/bin
-                    
-                    # Инсталиране и тестване
+                    source ~/.bashrc
                     npm install
                     npm test
                 '''
