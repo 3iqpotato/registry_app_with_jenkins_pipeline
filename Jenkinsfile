@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    
+    tools {
+        nodejs 'NodeJS-LTS' // Трябва да съвпада с името от стъпка 2
+    }
 
     stages {
         stage('Checkout Code') {
@@ -19,12 +23,6 @@ pipeline {
             steps {
                 sh 'npm test'
             }
-        }
-    }
-
-    post {
-        always {
-            cleanWs() // Clean workspace after build
         }
     }
 }
