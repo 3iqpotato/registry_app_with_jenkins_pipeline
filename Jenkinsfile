@@ -1,10 +1,10 @@
 pipeline {
     agent {
         docker {
-            image 'node:18'   // Използва официален Node.js Docker образ
-            args '-u root:root'  // В случай че има нужда от root права
+            image 'node:18'
         }
     }
+
 
     environment {
         NODE_ENV = 'test'
