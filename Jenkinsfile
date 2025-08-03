@@ -1,36 +1,25 @@
 pipeline {
     agent {
         docker {
-            image 'node:18'  // Агент с Node.js 18
-            args '-p 3000:3000'  // Ако приложението ползва порт 3000
+            image 'node:18'
+            args '-p 3000:3000'
         }
     }
     stages {
         stage('Checkout') {
             steps {
-                checkout scm  // Извлича кода от Git (GitHub/GitLab/etc.)
+                checkout scm  // Автоматично извлича кода
             }
         }
-        stage('Install Dependencies') {
+        stage('Install') {
             steps {
-                sh 'npm install'  // Инсталира зависимости
+                sh 'npm install'
             }
         }
-        stage('Start App (Optional)') {
+        stage('Test') {
             steps {
-                sh 'npm start &'  // Стартира приложението в background
-                sleep(time: 5, unit: 'SECONDS')  // Изчаква 5 секунди
+                sh 'npm test'
             }
-        }
-        stage('Run Tests') {
-            steps {
-                sh 'npm test'  // Пуска тестовете
-            }
-        }
-    }
-    post {
-        always {
-            sh 'pkill -f "npm start" || true'  // Спира приложението (ако е пуснато)
         }
     }
 }
