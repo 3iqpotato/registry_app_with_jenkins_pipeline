@@ -1,18 +1,23 @@
 pipeline {
-    agent any
-
-    stages {
-        stage('Build inside Docker') {
-            steps {
-                script {
-                    docker.image('node:18').inside('-u root') {
-                        checkout scm
-                        sh 'git status'     // тестово
-                        sh 'npm install'
-                        sh 'npm test'
-                    }
-                }
-            }
-        }
+  agent {
+    docker {
+      image 'node:18'
+      args '-u root'
+      reuseNode true
     }
+  }
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+        sh 'ls -la' // виждаш .git?
+      }
+    }
+    stage('Install & Test') {
+      steps {
+        sh 'npm install'
+        sh 'npm test'
+      }
+    }
+  }
 }
