@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        NODEJS_VERSION = '18'  // 👈 Съвпада с версията в Jenkins глобалните настройки
+        NODEJS_VERSION = '24'  // 👈 Съвпада с версията в Jenkins глобалните настройки
     }
     stages {
         stage('Checkout') {
