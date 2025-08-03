@@ -1,22 +1,17 @@
 pipeline {
-    agent any  // Checkout да е извън контейнер
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
+    agent any
 
-        stage('Build and Test in Docker') {
-            agent {
-                docker {
-                    image 'node:18'
-                    args '-u root'  // ако трябва root за инсталация
-                }
-            }
+    stages {
+        stage('Build inside Docker') {
             steps {
-                sh 'npm install'
-                sh 'npm test'
+                script {
+                    docker.image('node:18').inside('-u root') {
+                        checkout scm
+                        sh 'git status'     // тестово
+                        sh 'npm install'
+                        sh 'npm test'
+                    }
+                }
             }
         }
     }
