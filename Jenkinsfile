@@ -1,8 +1,12 @@
 pipeline {
     agent any
-    
+
     tools {
         nodejs 'node-24.5'  // Това трябва да е точното име от Global Tool Configuration
+    }
+
+    triggers {
+        pollSCM('*/2 * * * *')  // Проверява за нови комити на всеки 2 минути
     }
 
     stages {
