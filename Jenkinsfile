@@ -1,17 +1,17 @@
 pipeline {
-    agent any  // Използва default Jenkins agent
-
+    agent any  // Checkout да е извън контейнер
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-        stage('Build in Docker') {
+
+        stage('Build and Test in Docker') {
             agent {
                 docker {
                     image 'node:18'
-                    args '-p 3000:3000'
+                    args '-u root'  // ако трябва root за инсталация
                 }
             }
             steps {
