@@ -1,28 +1,30 @@
 pipeline {
     agent any
-    environment {
-        NODEJS_VERSION = '24'  // 👈 Съвпада с версията в Jenkins глобалните настройки
-    }
+
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                checkout scm  // Автоматично използва вече конфигурирания Git repo
+                git branch: 'main',
+                url: 'https://github.com/3iqpotato/registry_app_with_jenkins_pipeline.git'
             }
         }
 
-        stage('Setup Node') {
-            steps {
-                nodejs(nodeJSInstallationName: "node-${NODEJS_VERSION}") {
-                    sh 'node --version && npm --version'
-                }
-            }
-        }
-
-        stage('Install & Test') {
+        stage('Install Dependencies') {
             steps {
                 sh 'npm install'
-                sh 'npm test'  // 👈 Задължително имайте тестове в package.json!
             }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'npm test'
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs() // Clean workspace after build
         }
     }
 }
