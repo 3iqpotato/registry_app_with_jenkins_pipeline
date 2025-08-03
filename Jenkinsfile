@@ -9,16 +9,20 @@ pipeline {
             }
         }
 
-        // 2. Setup Node.js (ако не е инсталиран)
-        stage('Setup Node.js') {
+        // 2. Verify Node.js (без инсталация)
+        stage('Verify Node.js') {
             steps {
                 sh '''
                     if ! command -v node &> /dev/null; then
-                        echo "Installing Node.js..."
-                        curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-                        apt-get install -y nodejs
+                        echo "ERROR: Node.js не е инсталиран!"
+                        echo "Трябва да инсталирате Node.js в Jenkins контейнера ръчно:"
+                        echo "1. docker exec -itu root jenkins-docker bash"
+                        echo "2. curl -fsSL https://deb.nodesource.com/setup_18.x | bash -"
+                        echo "3. apt-get install -y nodejs"
+                        exit 1
                     fi
                     node --version
+                    npm --version
                 '''
             }
         }
