@@ -1,30 +1,36 @@
 pipeline {
-    agent any
-
+    agent {
+        docker {
+            image 'node:18'  // Агент с Node.js 18
+            args '-p 3000:3000'  // Ако приложението ползва порт 3000
+        }
+    }
     stages {
-        stage('Setup Environment') {
+        stage('Checkout') {
             steps {
-                sh '''#!/bin/bash -l
-                    # Изтегляне и инсталиране на Node.js в home директория
-                    mkdir -p ~/.nodejs
-                    curl -L https://nodejs.org/dist/v18.20.2/node-v18.20.2-linux-x64.tar.xz | tar -xJ -C ~/.nodejs --strip-components=1
-                    echo "export PATH=\$HOME/.nodejs/bin:\$PATH" >> ~/.bashrc
-                    source ~/.bashrc
-                    
-                    node --version
-                    npm --version
-                '''
+                checkout scm  // Извлича кода от Git (GitHub/GitLab/etc.)
             }
         }
-
-        stage('Run Pipeline') {
+        stage('Install Dependencies') {
             steps {
-                sh '''#!/bin/bash -l
-                    source ~/.bashrc
-                    npm install
-                    npm test
-                '''
+                sh 'npm install'  // Инсталира зависимости
             }
+        }
+        stage('Start App (Optional)') {
+            steps {
+                sh 'npm start &'  // Стартира приложението в background
+                sleep(time: 5, unit: 'SECONDS')  // Изчаква 5 секунди
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                sh 'npm test'  // Пуска тестовете
+            }
+        }
+    }
+    post {
+        always {
+            sh 'pkill -f "npm start" || true'  // Спира приложението (ако е пуснато)
         }
     }
 }
